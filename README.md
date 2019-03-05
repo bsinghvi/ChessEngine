@@ -8,5 +8,5 @@
   A game can be played between two players, though players have to check for checkmate themselves. 
   
 ## Programming language used
-  I'm using Java right now, as it's OOP capabilities are easy to use and are really vital in creating an efficient program. 
+  I'm using Java right now, as it's OOP capabilities are easy to use and could be really vital in helping make this game efficient.
   Additionally, it can be compiled using Eclipse which makes it easy to check the code.
