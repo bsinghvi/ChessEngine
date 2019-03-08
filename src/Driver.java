@@ -7,8 +7,8 @@ public class Driver {
 	public static void main(String[] args) {
 		Scanner kb = new Scanner(System.in);
 		String move = "";
+		printBoard();
 		while(true) {
-			printBoard();
 			boolean check = false;
 			while(check==false) {
 				System.out.println("Player 1: Where do you want to move your piece to? Denote starting position such as E6, and ending such as A1, as 'E6,A1' ");
@@ -18,6 +18,10 @@ public class Driver {
 				}
 			}
 			printBoard();
+			if(chess.checkMate(chess.king2r, chess.king2c)) {
+				System.out.println("CHECKMATE");
+				break;
+			}
 			check = false;
 			while(check==false) {
 				System.out.println("Player 2: Where do you want to move your piece to? Denote starting position such as E6, and ending such as A1, as 'E6,A1' ");
@@ -25,6 +29,11 @@ public class Driver {
 				if(checkMove(move, 1)) {
 					check = true;
 				}
+			}
+			printBoard();
+			if(chess.checkMate(chess.king1r, chess.king1c)) {
+				System.out.println("CHECKMATE");
+				break;
 			}
 		}
 	}
@@ -81,11 +90,12 @@ public class Driver {
 		int r1 = Integer.parseInt(m[0].charAt(1)+"")-1;
 		int c2 = ((int)(m[1].charAt(0))-65);
 		int r2 = Integer.parseInt(m[1].charAt(1)+"")-1;
-		if(chess.parsePlayer(c1, r1) != p) {
-			System.out.println("Not a valid move!");
+		System.out.println(chess.parsePlayer(c1, r1));
+		if(chess.parsePlayer(r1, c1) != p) {
+			System.out.println("Not a valid move! You're moving the opponents's piece!");
 			return false;
 		}
-		System.out.println(chess.b[r1][c1]+ r1 + " " + c1);
+		// System.out.println(chess.b[r1][c1]+ r1 + " " + c1);
 		if(checkPiece(r1, c1, r2, c2)) {
 			int checked = chess.changePos(r1, c1, r2, c2);
 			if(checked==0) {
