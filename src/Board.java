@@ -3,6 +3,10 @@ import java.util.ArrayList;
 public class Board {
 	String[][] b;
 	ArrayList<String> removed;
+	int king1r;
+	int king1c;
+	int king2r;
+	int king2c;
 	
 	public Board() {
 		 removed = new ArrayList<String>();
@@ -14,6 +18,10 @@ public class Board {
 							 {"EMPTY   ", "EMPTY   ", "EMPTY   ", "EMPTY   ", "EMPTY   ", "EMPTY   ", "EMPTY   ", "EMPTY   "},
 							 {"B PAWN  ", "B PAWN  ", "B PAWN  ", "B PAWN  ", "B PAWN  ", "B PAWN  ", "B PAWN  ", "B PAWN  "}, 
 							 {"B ROOK  ", "B KNIGHT", "B BISHOP", "B QUEEN ", "B KING  ", "B BISHOP", "B KNIGHT", "B ROOK  "} };
+		king1r = 0;
+		king1c = 4;
+		king2r = 7;
+		king2c = 4;
 	}
 	/**
 	 * Determine which player the piece belongs to
@@ -42,6 +50,14 @@ public class Board {
 		if(b[r][c] != "EMPTY   ") {
 		   b[r][c] = b[u][v];
 		   b[u][v] = "EMPTY   ";
+		   if(b[u][v]=="A KING  ") {
+			   king1r = u;
+			   king1c = v;
+		   }
+		   else if(b[u][v]=="B KING  ") {
+			   king2r = u;
+			   king2c = v;
+		   }
 		   return 1;
 		}
 		else if(parsePlayer(u,v) != parsePlayer(r,c)) {
@@ -55,60 +71,101 @@ public class Board {
 		}
 		return 0;
 	}
-	public boolean checkMate() {
-		
-		return false;
-	}
-	public boolean checkSurrounding(int r, int c) {
-		int orig = parsePlayer(r,c);
-		for(int i=0; i<8; i++) {
-			c = (c+i)%8;
-			int curr = parsePlayer(r,c);
-			if(orig !=-1 && curr != orig) {
-				if(b[r][c].contains("ROOK") || b[r][c].contains("QUEEN") ) {
-					return true;
+	public boolean checkMate(int kingR, int kingC) {
+		if(checkSurrounding(kingR,kingC)==true) {
+			int orig = parsePlayer(kingR,kingC);
+			int sum = 8;
+			for(int i=-1; i<=1; i++) {
+				for(int j=-1; j<=1; j++) {
+					int checkR = kingR + i;
+					int checkC = kingC + j;
+					if(checkR>7 || checkR<0 || checkC>7 || checkC<0) {
+						sum-=1;
+					}
+					else {
+						int piece = parsePlayer(checkR,checkC);
+						if(piece == orig) {
+							sum -=1;
+						}
+					}
 				}
 			}
+			for(int i = kingC-1; i<=kingC+1; i+=2) {
+				if(i>=0 && i<8) {
+					for(int j=kingC-1; j<=kingC+1; j++) {
+						if(j>=0 && j<=7) {
+							if(j!=kingC || i==kingC) {
+								if(checkSurrounding(j, i)) {
+									sum-=1;
+								}
+							}
+						}
+					}
+				}
+			}
+			System.out.println(sum);
+			if(sum==0) {
+				return true;
+			}
 		}
+		return false;
+	}
+	// Method checks if there is an opposing piece that could remove it
+	// Return true if there is one
+	public boolean checkSurrounding(int r, int c) {
+		// Parse which player's piece it is
+		int orig = parsePlayer(r,c);
+		
+		// Following for loops run check if there are any opposing pieces, 
+		// and if so can it remove the piece in question
 		for(int i=0; i<8; i++) {
-			r = (r+i)%8;
-			int curr = parsePlayer(r,c);
+			int c1 = (c+i)%8;
+			int curr = parsePlayer(r,c1);
 			if(orig !=-1 && curr != orig) {
-				if(b[r][c].contains("ROOK") || b[r][c].contains("QUEEN") ) {
+				if(b[r][c1].contains("ROOK") || b[r][c1].contains("QUEEN") ) {
 					return true;
 				}
 			}
 		}
 		for(int i=0; i<8; i++) {
 			int r1 = (r+i)%8;
-			int r2 = (c+i)%8;
-			int curr = parsePlayer(r,c);
+			int curr = parsePlayer(r1,c);
 			if(orig !=-1 && curr != orig) {
-				if(b[r][c].contains("BISHOP") || b[r][c].contains("QUEEN") ) {
+				if(b[r1][c].contains("ROOK") || b[r1][c].contains("QUEEN") ) {
+					return true;
+				}
+			}
+		}
+		for(int i=0; i<8; i++) {
+			int r1 = (r+i)%8;
+			int c1 = (c+i)%8;
+			int curr = parsePlayer(r1,c1);
+			if(orig !=-1 && curr != orig) {
+				if(b[r1][c1].contains("BISHOP") || b[r1][c1].contains("QUEEN") ) {
 					return true;
 				}
 			}
 			r1 = (r+i)%8;
-			r2 = (c-i)%8;
-			curr = parsePlayer(r,c);
+			c1 = (((c-i)%8) + 8)%8;
+			curr = parsePlayer(r1,c1);
 			if(orig !=-1 && curr != orig) {
-				if(b[r][c].contains("BISHOP") || b[r][c].contains("QUEEN") ) {
+				if(b[r1][c1].contains("BISHOP") || b[r1][c1].contains("QUEEN") ) {
 					return true;
 				}
 			}
-			r1 = (r-i)%8;
-			r2 = (c+i)%8;
-			curr = parsePlayer(r,c);
+			r1 = (((r-i)%8) + 8)%8;
+			c1 = (c+i)%8;
+			curr = parsePlayer(r1,c1);
 			if(orig !=-1 && curr != orig) {
-				if(b[r][c].contains("BISHOP") || b[r][c].contains("QUEEN") ) {
+				if(b[r1][c1].contains("BISHOP") || b[r1][c1].contains("QUEEN") ) {
 					return true;
 				}
 			}
-			r1 = (r-i)%8;
-			r2 = (c-i)%8;
-			curr = parsePlayer(r,c);
+			r1 = (((r-i)%8) + 8)%8;
+			c1 = (((c-i)%8) + 8)%8;
+			curr = parsePlayer(r1,c1);
 			if(orig !=-1 && curr != orig) {
-				if(b[r][c].contains("BISHOP") || b[r][c].contains("QUEEN") ) {
+				if(b[r1][c1].contains("BISHOP") || b[r1][c1].contains("QUEEN") ) {
 					return true;
 				}
 			}
@@ -121,7 +178,7 @@ public class Board {
 			}
 		}
 		if(orig==1) {
-			if(r-2 <=7) {
+			if(r-2 <=7 && r-2 >=0) {
 				if(b[r-2][c+1].contains("A PAWN") || b[r+2][c-1].contains("A PAWN")) {
 					return true;
 				}
