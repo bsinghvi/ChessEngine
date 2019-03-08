@@ -7,6 +7,6 @@
 ## Current status
   A game can be played between two players, though players have to check for checkmate themselves. Working on invalidating illegal jumps and checkmate, while trying to make sure that each method can be later used by the computer player to make decisions.
   
-## Programming language used
-  I'm using Java right now, as it's OOP capabilities are easy to use and could be really vital in helping make this game efficient.
-  Additionally, it can be compiled using Eclipse which makes it easy to check the code.
+## Resources used
+  I'm using Java right now, as I think it's OOP features are easy to use, and would really be vital in making this game.
+  Additionally, I'm using Eclipse which makes it easy to check and debug the code.
