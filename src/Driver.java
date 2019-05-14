@@ -2,7 +2,6 @@ import java.util.Scanner;
 
 public class Driver {
 	static Board chess = new Board();
-	static ValidMove v = new ValidMove();
 	
 	public static void main(String[] args) {
 		Scanner kb = new Scanner(System.in);
@@ -82,11 +81,27 @@ public class Driver {
 	 * checkPiece - to check if the piece can move the way it's been asked to
 	 */
 	public static boolean checkMove(String move, int p) {
+		if(move.length()!=5 || move.charAt(2)!=',') {
+			System.out.println("Your specified move wasn't written correctly!");
+			return false;
+		}
 		String[] m = move.split(",");
 		int r1 = Integer.parseInt(m[0].charAt(1)+"")-1;
 		int c1 = ((int)(m[0].charAt(0))-65);
+		if(r1 >=0 && r1 <8 && c1>=65 && c1<=72) {
+			System.out.println("You did not enter the pieces initial location right");
+			return false;
+		}
+		if(r1 < 0 || r1 >=8 || c1<65 || c1>=72) {
+			System.out.println("You did not enter the pieces initial location right");
+			return false;
+		}
 		int r2 = Integer.parseInt(m[1].charAt(1)+"")-1;
 		int c2 = ((int)(m[1].charAt(0))-65);
+		if(r2 < 0 || r2 >=8 || c2<65 || c2>=72) {
+			System.out.println("You did not enter the piece's destination location right");
+			return false;
+		}
 		if(chess.parsePlayer(r1, c1) != p) {
 			if(chess.parsePlayer(r1, c1)==-1) {
 				System.out.println("Not a valid move! There's no piece there!");
@@ -96,8 +111,6 @@ public class Driver {
 			}
 			return false;
 		}
-		// System.out.println(chess.b[r1][c1]+ r2 + " " + c2);
-		
 		// Check if the piece can move in the way it has been asked to
 		if(checkPiece(r1, c1, r2, c2,p)) {
 			// Check if the piece can move into the spot it's getting into
