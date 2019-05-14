@@ -32,10 +32,6 @@ public class Board {
 			   }
 		   }
 	   }
-	   for(String key : pieces.keySet()) {
-		   System.out.println(key + " " + pieces.get(key));
-	   }
-	   
 	}
 	
 	/**
