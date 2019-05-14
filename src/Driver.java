@@ -7,6 +7,7 @@ public class Driver {
 	public static void main(String[] args) {
 		Scanner kb = new Scanner(System.in);
 		String move = "";
+		String checkK = "";
 		printBoard();
 		while(true) {
 			boolean check = false;
@@ -18,9 +19,12 @@ public class Driver {
 				}
 			}
 			printBoard();
-			if(chess.checkMate(chess.king2r, chess.king2c)) {
-				System.out.println("CHECKMATE");
-				break;
+			checkK = chess.checkKing(chess.king2r, chess.king2c);
+			if(checkK != "false") {
+				System.out.println(checkK);
+				if(checkK == "Checkmate") {
+					break;
+				}
 			}
 			check = false;
 			while(check==false) {
@@ -31,12 +35,20 @@ public class Driver {
 				}
 			}
 			printBoard();
-			if(chess.checkMate(chess.king1r, chess.king1c)) {
-				System.out.println("CHECKMATE");
-				break;
+			checkK = chess.checkKing(chess.king1r, chess.king1c);
+			if(checkK != "false") {
+				System.out.println(checkK);
+				if(checkK == "Checkmate") {
+					break;
+				}
 			}
 		}
+		kb.close();
 	}
+	
+	/*
+	 * Prints the board using for loops and text manipulation
+	 */
 	public static void printBoard() {
 		System.out.print("\t");
 		for(int j=65; j<73;j++) 
@@ -63,51 +75,81 @@ public class Driver {
 		System.out.println("");
 	}
 	
-	public static boolean checkPiece(int r1, int c1, int r2, int c2) {
-		if(chess.b[r1][c1].contains("ROOK")) {
-			return v.validRook(r1, c1, r2, c2);
-		}
-		else if(chess.b[r1][c1].contains("KNIGHT")) {
-			return v.validKnight(r1, c1, r2, c2);
-		}
-		else if(chess.b[r1][c1].contains("BISHOP")) {
-			return v.validBishop(r1, c1, r2, c2);
-		}
-		else if(chess.b[r1][c1].contains("QUEEN")) {
-			return v.validQueen(r1, c1, r2, c2);
-		}
-		else if(chess.b[r1][c1].contains("KING")) {
-			return v.validKing(r1, c1, r2, c2);
-		}
-		else if(chess.b[r1][c1].contains("PAWN")) {
-			return v.validPawn(r1, c1, r2, c2);
-		}
-		return false;
-	}
+	/*
+	 * Main method for checking if the move is valud. 
+	 * Coordinates with the Board class to use its following methods:
+	 * parsePlayer - to check which player is moving the piece
+	 * checkPiece - to check if the piece can move the way it's been asked to
+	 */
 	public static boolean checkMove(String move, int p) {
 		String[] m = move.split(",");
-		int c1 = ((int)(m[0].charAt(0))-65);
 		int r1 = Integer.parseInt(m[0].charAt(1)+"")-1;
-		int c2 = ((int)(m[1].charAt(0))-65);
+		int c1 = ((int)(m[0].charAt(0))-65);
 		int r2 = Integer.parseInt(m[1].charAt(1)+"")-1;
-		System.out.println(chess.parsePlayer(c1, r1));
+		int c2 = ((int)(m[1].charAt(0))-65);
 		if(chess.parsePlayer(r1, c1) != p) {
-			System.out.println("Not a valid move! You're moving the opponents's piece!");
+			if(chess.parsePlayer(r1, c1)==-1) {
+				System.out.println("Not a valid move! There's no piece there!");
+			}
+			else {
+				System.out.println("Not a valid move! You're moving the opponents's piece!");
+			}
 			return false;
 		}
-		// System.out.println(chess.b[r1][c1]+ r1 + " " + c1);
-		if(checkPiece(r1, c1, r2, c2)) {
+		// System.out.println(chess.b[r1][c1]+ r2 + " " + c2);
+		
+		// Check if the piece can move in the way it has been asked to
+		if(checkPiece(r1, c1, r2, c2,p)) {
+			// Check if the piece can move into the spot it's getting into
 			int checked = chess.changePos(r1, c1, r2, c2);
-			if(checked==0) {
-				System.out.println("Not a valid move!");
+			if(checked == 0) {
+				System.out.println("Not a valid move! You're trying to move into a spot which contains your own piece!");
 				return false;
 			}
 		}
 		else {
-			System.out.println("Not a valid move!");
+			System.out.println("Not a valid move! The piece you selected doesn't move that way");
 			return false;
 		}
 		return true;
 	}
 	
+	
+	/**
+	 * Method called by checkMove 
+	 * Determines what piece it is and called the corresponding method in the Board class...
+	 * ...to check if the piece moves in the way it's asked
+	 * @param r1 - initial row
+	 * @param c1 - initial column
+	 * @param r2 - destination row
+	 * @param c2 - destination column
+	 * @param p - Whose piece it is, 0 for Player 1, 1 for player 2
+	 * @return whether it's a valid move or not
+	 */
+	public static boolean checkPiece(int r1, int c1, int r2, int c2, int p) {
+		if(chess.b[r1][c1].contains("ROOK")) {
+			return chess.validRook(r1, c1, r2, c2);
+		}
+		else if(chess.b[r1][c1].contains("KNIGHT")) {
+			return chess.validKnight(r1, c1, r2, c2);
+		}
+		else if(chess.b[r1][c1].contains("BISHOP")) {
+			return chess.validBishop(r1, c1, r2, c2);
+		}
+		else if(chess.b[r1][c1].contains("QUEEN")) {
+			
+			return chess.validQueen(r1, c1, r2, c2);
+		}
+		else if(chess.b[r1][c1].contains("KING")) {
+			return chess.validKing(r1, c1, r2, c2);
+		}
+		else if(chess.b[r1][c1].contains("PAWN")) {
+			int spot = chess.parsePlayer(r2,c2);
+			if(spot != p && spot != -1) {
+				return chess.validPawn(r1, c1, r2, c2, p, 1);
+			}
+			return chess.validPawn(r1, c1, r2, c2, p, 0);
+		}
+		return false;
+	}
 }
